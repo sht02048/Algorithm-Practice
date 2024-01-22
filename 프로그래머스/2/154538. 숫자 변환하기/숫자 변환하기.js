@@ -1,23 +1,39 @@
 function solution(x, y, n) {
-    let answer = -1
-    const stack = [{num:y,tried:0}]
-    while(stack.length !== 0){
-        const {num,tried} = stack.shift()
+  const queue = [[y, 0]];
 
-        if(num === x){
-            answer = tried
-            break;
-        }
-
-        if(num%2 === 0){
-            stack.push({num:num/2, tried:tried+1})
-        }
-        if(num%3 === 0){
-            stack.push({num:num/3, tried:tried+1})
-        }
-        if(num-n >= x){
-            stack.push({num:num-n, tried:tried+1})
-        }
+  while (queue.length !== 0) {
+    // console.log(queue);
+    let [currentNumber, count] = queue.shift();
+    if (currentNumber === x) {
+      return count;
     }
-    return answer
+
+    if (currentNumber / 2 === y || currentNumber / 3 === y || currentNumber - n === y) {
+      return count + 1;
+    }
+
+    if (currentNumber % 2 === 0) {
+      const nextNumber = currentNumber / 2;
+      const nextCount = count + 1;
+      queue.push([nextNumber, nextCount]);
+    }
+
+    if (currentNumber % 3 === 0) {
+      const nextNumber = currentNumber / 3;
+      const nextCount = count + 1;
+      queue.push([nextNumber, nextCount]);
+    }
+
+    if (currentNumber - n < y && currentNumber - n > 0) {
+      const nextNumber = currentNumber - n;
+      const nextCount = count + 1;
+      queue.push([nextNumber, nextCount]);
+    }
+  }
+
+  return -1
 }
+
+const result = solution(2, 5 ,4);
+
+console.log(result);
