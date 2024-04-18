@@ -2,7 +2,7 @@ function solution(sizes) {
     let biggestLeft = 0;
     let biggestRight = 0;
     
-    const mapped = sizes.map((size) => {
+    sizes.forEach((size) => {
         const [left, right] = size;
         
         if (left < right) {
@@ -14,7 +14,7 @@ function solution(sizes) {
                 biggestLeft = right;
             }
             
-            return [right, left];
+            return;
         }
         
         if (right > biggestRight) {
@@ -25,8 +25,8 @@ function solution(sizes) {
             biggestLeft = left;
         }
         
-        return size;
-    })
+        return;
+    });
     
     return biggestLeft * biggestRight;
 }
