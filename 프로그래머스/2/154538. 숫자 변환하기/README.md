@@ -1,10 +1,10 @@
 # [level 2] 숫자 변환하기 - 154538 
 
-[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/154538) 
+[문제 링크](https://school.programmers.co.kr/learn/courses/30/lessons/154538#qna) 
 
 ### 성능 요약
 
-메모리: 33.7 MB, 시간: 0.50 ms
+메모리: 33.4 MB, 시간: 0.31 ms
 
 ### 구분
 
@@ -16,7 +16,7 @@
 
 ### 제출 일자
 
-2024년 1월 1일 13:15:54
+2024년 05월 22일 08:40:38
 
 ### 문제 설명
 
