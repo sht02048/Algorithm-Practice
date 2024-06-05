@@ -1,5 +1,5 @@
 function solution(fees, records) {
-  const parkingIn = {};
+  const lastTime = 23 * 60 + 59;
   const parkedTime = {};
   const [standardTime, standardFee, unitTime, unitFee] = fees;
   const carsFee = {};
@@ -15,60 +15,30 @@ function solution(fees, records) {
       return value;
     });
 
-    if (status === "IN") {
-      parkingIn[carNumber] = time;
-
-      if (!carsFee[carNumber]) {
-        carsFee[carNumber] = 0;
-      }
-
-      return;
-    }
-
-    if (status === "OUT") {
-      const inTime = parkingIn[carNumber];
-      const timeDifference = time - inTime;
-
-      parkedTime[carNumber] === undefined ? parkedTime[carNumber] = timeDifference : parkedTime[carNumber] += timeDifference;
-
-      delete parkingIn[carNumber];
-    }
+    if (!parkedTime[carNumber]) parkedTime[carNumber] = 0;
+    if (status === "IN") parkedTime[carNumber] += lastTime - time;
+    if (status === "OUT") parkedTime[carNumber] += time - lastTime;
   });
 
-  console.log(parkingIn);
-
-  for (const leftCar in parkingIn) {
-    const inTime = parkingIn[leftCar];
-    const lastTime = 23 * 60 + 59;
-    const timeDifference = lastTime - inTime;
-
-    parkedTime[leftCar] === undefined ? parkedTime[leftCar] = timeDifference : parkedTime[leftCar] += timeDifference;
-  }
-
-  for (const car in parkedTime) {
-    const time = parkedTime[car];
-
-    carsFee[car] = standardFee;
+  const feesSortedByCarNumber = Object.entries(parkedTime).map((info) => {
+    let totalFee = standardFee;
+    const [carNumber, time] = info;
 
     if (time > standardTime) {
-      const totalFee = Math.ceil((time - standardTime) / unitTime) * unitFee;
-      carsFee[car] += totalFee;
+      const additionalFee =  Math.ceil((time - standardTime) / unitTime) * unitFee;
+      totalFee += additionalFee;
     }
 
-  }
+    return [carNumber, totalFee];
+  })
+  .sort((a, b) => {
+      const carNumberA = Number(a[0]);
+      const carNumberB = Number(b[0]);
 
-  const carInfo = Object.entries(carsFee).sort((a, b) => {
-    const carNumberA = Number(a[0]);
-    const carNumberB = Number(b[0]);
-
-    return carNumberA - carNumberB
+      return carNumberA - carNumberB
   });
 
-  const answer = [];
-
-  for (const [_, fee] of carInfo) {
-    answer.push(fee)
-  }
+  const answer = feesSortedByCarNumber.map(([_, fee]) => fee);
 
   return answer;
 }
