@@ -1,41 +1,23 @@
 function solution(n, computers) {
-  if (n === 1) {
-    return 1;
-  }
+    const visited = new Array(n).fill(0)
+    let count = 0;
 
-  const visitedMap = Array.from({ length: n }, () => new Array(n).fill(false));
-  let answer = 0;
+    for (let i=0; i<visited.length; i++) {
+        if (visited[i] === 1) continue;
 
-  computers.forEach((arr, indexX) => {
-    arr.forEach((computer, indexY) => {
-      if (computer === 0 || visitedMap[indexX][indexY] === true) return;
+        count += 1;
+        dfs(computers, visited, i);
+    }
 
-      dfs([indexX, indexY], visitedMap, computers);
-
-      answer += 1;
-    });
-  });
-
-  return answer;
+    return count;
 }
 
-function dfs(startPoint, visitedMap, computers) {
-  let network = 0;
-  const stack = [startPoint];
+function dfs(map, visited, node) {
+    visited[node] = 1;
 
-  while(stack.length > 0) {
-    const [x, y] = stack.pop();
-
-    if (visitedMap[x][y] === true) continue;
-
-    visitedMap[x][y] = true;
-
-    if ((y === visitedMap.length - 1 || y  > 0) && visitedMap[x][y - 1] !== true) stack.push([x, y - 1]);
-    if (y < visitedMap.length - 1 && visitedMap[x][y + 1] !== true) stack.push([x, y + 1]);
-    if (visitedMap[y][x] !== true && computers[x][y] !== 0) {
-      stack.push([y, x]);
-    };
-  }
-
-  return network;
+    for (let i=0; i<map[node].length; i++) {
+        if ( map[node][i] && visited[i] === 0) {
+            dfs(map, visited, i);
+        }
+    }
 }
