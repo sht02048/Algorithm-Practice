@@ -1,96 +1,54 @@
 function solution(land) {
-  const oilInfos = [];
-  let farLeft = 501;
-  let farRight = -1;
-  let maxReserve = 0;
-
-  land.forEach((arr, xIndex) => {
-      arr.forEach((value, yIndex) => {
-        if (value === 0) {
-          return;
-        }
-
-         const oilInfo = search([xIndex, yIndex], land);
-         const [_, left, right] = oilInfo;
-         oilInfos.push(oilInfo);
-
-         if (left < farLeft) {
-          farLeft = left;
-         }
-
-         if (right > farRight) {
-          farRight = right;
-         }
-      });
+    const oilByLand = new Array(land[0].length).fill(0);
+    const visitArray = Array.from({ length: land.length }, () => new Array(land[0].length).fill(false));
+    const maxX = land.length - 1;
+    const maxY = land[0].length - 1;
+    
+    land.forEach((row, indexX) => {
+        row.forEach((col, indexY) => {
+                      if (visitArray[indexX][indexY] || land[indexX][indexY] === 0) return;
+            
+            const { oilCount, oilStart, oilEnd } = dfs({ currentX: indexX, currentY: indexY});
+            
+            if (oilCount === 0) return;
+            
+            for (let i = oilStart; i <= oilEnd; i++) {
+                oilByLand[i] += oilCount;
+            }
+        });
     });
-
-
-    for (let i = farLeft; i <= farRight; i += 1) {
-      let oilReserve = 0;
-
-      oilInfos.forEach(([oil, left, right]) => {
-        if (i >= left && i <= right) {
-          oilReserve += oil;
+    
+    function dfs({ currentX, currentY }) {
+       const stack = [[currentX, currentY]];
+        const directions = [[-1, 0], [1, 0], [0, -1], [0, 1]];
+        let oilCount = 1; // 처음 위치도 포함해야 함
+        let oilStart = currentY; // 초기 위치 포함
+        let oilEnd = currentY;   // 초기 위치 포함
+        
+        visitArray[currentX][currentY] = true; // 초기 위치 방문으로 설정
+        
+        while(stack.length > 0) {
+            const [currentX, currentY] = stack.pop();
+            
+            for (const direction of directions) {
+                const nextX = currentX + direction[0];
+                const nextY = currentY + direction[1];
+                
+                if (nextX < 0 || nextY < 0 || nextX > maxX || nextY > maxY) continue;
+                if (visitArray[nextX][nextY]) continue;
+                if (land[nextX][nextY] === 0) continue;
+                
+                if (oilStart > nextY) oilStart = nextY;
+                if (oilEnd < nextY) oilEnd = nextY;
+                
+                stack.push([nextX, nextY]);
+                visitArray[nextX][nextY] = true;
+                oilCount += 1;
+            }
         }
-      });
-
-      if (oilReserve > maxReserve) {
-        maxReserve = oilReserve;
-      }
+        
+        return { oilCount, oilStart, oilEnd }
     }
-
-    return maxReserve;
-}
-
-function search(n, land) {
-  let oilCount = 0;
-  const stack = [n];
-  const directions = {
-      top: [-1, 0],
-      bottom: [1, 0],
-      left: [0, -1],
-      right: [0 ,1]
-  };
-  const maxX = land.length - 1;
-  const maxY = land[0].length - 1;
-  let farLeft = 501;
-  let farRight = -1;
-
-  while (stack.length > 0) {
-      const [currentX, currentY] = stack.pop();
-
-      if (land[currentX][currentY] === 0) {
-          continue;
-      }
-
-
-      for (const direction in directions) {
-          const arr = directions[direction];
-          const nextX = currentX + arr[0];
-          const nextY = currentY + arr[1];
-
-          if (nextX < 0 ||
-              nextX > maxX ||
-              nextY < 0 ||
-              nextY > maxY
-             ) {
-              continue;
-          }
-
-          stack.push([nextX, nextY]);
-      }
-
-      if (currentY < farLeft) {
-        farLeft = currentY;
-      } 
-      if (currentY > farRight) {
-        farRight = currentY
-      }
-
-
-      oilCount += 1;
-      land[currentX][currentY] = 0;
-  }
-
-  return [oilCount, farLeft + 1, farRight + 1];
+    
+    return Math.max(...oilByLand);
 }
